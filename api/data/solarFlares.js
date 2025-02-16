@@ -1,11 +1,9 @@
+// solarFlares.js
 const express = require("express");
 const axios = require("axios");
 const cron = require("node-cron");
-const cors = require("cors");
 
-const app = express();
-const port = 3000;
-
+const router = express.Router();
 const API_URL = "https://api.nasa.gov/DONKI/FLR";
 const API_KEY = "DEMO_KEY";
 
@@ -16,8 +14,6 @@ const params = {
 };
 
 let solarData = [];
-
-app.use(cors());
 
 const getData = async () => {
   try {
@@ -34,7 +30,7 @@ const getData = async () => {
   }
 };
 
-app.get("/solar-flare-data", (req, res) => {
+router.get("/data", (req, res) => {
   if (solarData.length > 0) {
     res.json(solarData);
   } else {
@@ -44,7 +40,6 @@ app.get("/solar-flare-data", (req, res) => {
 
 cron.schedule("0 0 */3 * *", getData);
 
-app.listen(port, () => {
-  console.log(`Сервер запущен на http://localhost:${port}`);
-  getData();
-});
+getData(); // Запуск при старте приложения
+
+module.exports = router;

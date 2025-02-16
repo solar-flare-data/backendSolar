@@ -1,10 +1,9 @@
+// satellites.js
 const express = require("express");
 const axios = require("axios");
 const https = require("https");
 
-const app = express();
-const PORT = process.env.PORT || 5000;
-
+const router = express.Router();
 const agent = new https.Agent({ rejectUnauthorized: false });
 
 const parseTLELine1 = (line) => {
@@ -61,7 +60,7 @@ const parseTLELine2 = (line) => {
   };
 };
 
-app.get("/satellites", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const response = await axios.get(
       "http://www.celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=tle",
@@ -90,13 +89,11 @@ app.get("/satellites", async (req, res) => {
       }
     }
 
-    res.json(satellites); // Отправляем на клиент
+    res.json(satellites);
   } catch (error) {
     console.error("Error fetching TLE data:", error);
     res.status(500).json({ message: "Error fetching satellite data" });
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+module.exports = router;
